@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
+import { FeedModule } from './feed/feed.module';
 
 @Module({
-  imports: []
+  imports: [FeedModule]
 })
 export class AppModule {}
