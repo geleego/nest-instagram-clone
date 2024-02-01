@@ -18,8 +18,15 @@ export class UserController {
     return await this.userService.findOneBy(id);
   }
 
-  @Post()
+  @Post('join')
   async createUser(@Body() user: CreateUserDTO) {
+    // 동일 email 검사
+    await this.userService.findOneByEmail(user.email);
+
+    // password 암호화
+    const hashPassword = await this.userService.hashPassword(user.password);
+    user.password = hashPassword;
+
     return await this.userService.create(user);
   }
 
