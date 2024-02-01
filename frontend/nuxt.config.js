@@ -30,6 +30,10 @@ export default {
     'nuxt-windicss',
   ],
 
+  windicss: {
+    enableCssVariables: true,
+  },
+
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [],
 
