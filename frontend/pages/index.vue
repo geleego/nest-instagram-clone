@@ -1,5 +1,10 @@
 <template>
-  <Tutorial />
+  <div>
+    <h1>nest-instagram-clone</h1>
+    <NuxtLink to="/login">
+      <button>Login</button>
+    </NuxtLink>
+  </div>
 </template>
 
 <script lang="ts">
