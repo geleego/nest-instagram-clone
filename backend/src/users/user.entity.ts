@@ -6,17 +6,14 @@ export class User {
   id: number;
 
   @PrimaryColumn({ type: 'varchar', nullable: false, unique: true })
-  userId: string;
+  email: string;
 
   @Column({ type: 'varchar', nullable: false })
   password: string;
 
   @Column({ type: 'varchar', nullable: false, unique: true })
-  email: string;
-
-  @Column({ type: 'varchar', nullable: false, unique: true })
   phoneNumber: string;
 
   @Column({ type: 'varchar', nullable: false })
-  name: string;
+  nickName: string;
 }

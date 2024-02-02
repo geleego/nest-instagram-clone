@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { FeedModule } from './feed/feed.module';
-import { User } from './user/entities/user.entity';
-import { UserModule } from './user/user.module';
+import { UsersModule } from './users/users.module';
+import { User } from './users/user.entity';
 
 @Module({
   imports: [
@@ -20,8 +19,7 @@ import { UserModule } from './user/user.module';
       entities: [User],
       synchronize: true,
     }),
-    UserModule,
-    FeedModule,
+    UsersModule,
   ]
 })
 export class AppModule {}
