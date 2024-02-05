@@ -29,6 +29,15 @@
             class="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
           >
         </div>
+        <div>
+          <input
+            type="checkbox"
+            v-model="isRememberId"
+          >
+          <label for="remember">
+            아이디 저장
+          </label>
+        </div>
         <button
           type="submit"
           class="w-full bg-blue-500 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline"
@@ -38,7 +47,9 @@
       </form>
       <div class="mt-4 text-center">
         <NuxtLink to="/signup">
-          <button class="text-blue-500">회원가입</button>
+          <button class="text-blue-500">
+            회원가입
+          </button>
         </NuxtLink>
       </div>
     </div>
@@ -50,33 +61,37 @@ export default {
   data() {
     return {
       email: '',
-      password: ''
+      password: '',
+      isRememberId: false
     }
   },
   mounted() {
-    this.getInfo()
+    this.rememberId()
   },
   methods: {
-    async getInfo() {
-      try {
-        const response = await this.$axios.get(`/users`);
-        console.log(response.data);
-      } catch (error) {
-        console.error('데이터를 가져오는 동안 에러가 발생했습니다:', error);
+    rememberId() {
+      const savedEmail = localStorage.getItem('savedEmail');
+      if (savedEmail) {
+        this.email = savedEmail;
+        this.isRememberId = true;
       }
     },
     async login() {
       try {
+        if (this.isRememberId) {
+          localStorage.setItem('savedEmail', this.email);
+        } else {
+          localStorage.removeItem('savedEmail');
+        }
+
         const payload = {
           email: this.email,
           password: this.password
-        }
-        const response = await this.$axios.post('/users/signin', payload);
+        };
+        await this.$axios.post('/users/signin', payload);
 
-        // 로그인 성공 시 처리
-        console.log(response.data);
+        $nuxt.$router.push({ name: 'home' });
       } catch (error) {
-        // 로그인 실패 시 처리
         console.error(error);
       }
     }
