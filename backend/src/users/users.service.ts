@@ -86,8 +86,18 @@ export class UsersService {
    * 비밀번호 암호화
    * @param password
    */
-  async hashPassword(password: string) {
-    return await bcrypt.hash(password, 11);
+  async hashPassword(password: string): Promise<string> {
+    const saltOrRounds = 10;
+    return await bcrypt.hash(password, saltOrRounds);
+  }
+
+  /**
+   * 비밀번호 비교
+   * @param plainPassword
+   * @param hashedPassword
+   */
+  async comparePassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
+    return await bcrypt.compare(plainPassword, hashedPassword);
   }
 
   /**
@@ -97,10 +107,12 @@ export class UsersService {
    */
   async validateUser(email: string, password: string): Promise<User | null> {
     const user = await this.usersRepository.findOne({ where: { email } } as FindOneOptions<User>);
+    const isPasswordValid = await this.comparePassword(password, user.password);
 
-    if (user && user.password === password) {
+    if (user && isPasswordValid) {
       return user;
     }
+
     return null;
   }
 }

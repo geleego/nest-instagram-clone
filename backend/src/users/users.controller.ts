@@ -22,9 +22,9 @@ export class UsersController {
 
   @Post('signup')
   async create(@Body() user: CreateUserDTO) {
-    const { email, phoneNumber, nickname } = user;
+    const { email, password, phoneNumber, nickname } = user;
 
-    // 동일 email 검사
+    // 동일 이메일 검사
     const hasEmail = await this.usersService.findByEmail(email);
     if (hasEmail) {
       throw new BadRequestException('이미 사용중인 이메일 입니다.');
@@ -41,6 +41,10 @@ export class UsersController {
     if (hasNickname) {
       throw new BadRequestException('이미 사용중인 닉네임 입니다.');
     }
+
+    // 비밀번호 암호화
+    const hashPassword = await this.usersService.hashPassword(password);
+    user.password = hashPassword;
 
     return await this.usersService.create(user);
   }
