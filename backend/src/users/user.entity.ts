@@ -15,5 +15,5 @@ export class User {
   phoneNumber: string;
 
   @Column({ type: 'varchar', nullable: false })
-  nickName: string;
+  nickname: string;
 }

@@ -14,9 +14,9 @@
       >
         <div>
           <input
-            v-model="userId"
+            v-model="email"
             type="text"
-            placeholder="아이디"
+            placeholder="아이디(이메일)"
             class="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
           >
         </div>
@@ -49,18 +49,17 @@
 export default {
   data() {
     return {
-      userId: '',
+      email: '',
       password: ''
     }
   },
   mounted() {
-    // this.getInfo()
+    this.getInfo()
   },
   methods: {
     async getInfo() {
       try {
-        const id = 'gelee'
-        const response = await this.$axios.get(`/user/${id}`);
+        const response = await this.$axios.get(`/users`);
         console.log(response.data);
       } catch (error) {
         console.error('데이터를 가져오는 동안 에러가 발생했습니다:', error);
@@ -69,10 +68,11 @@ export default {
     async login() {
       try {
         const payload = {
-          userId: this.userId,
+          email: this.email,
           password: this.password
         }
-        const response = await this.$axios.post('/auth/login', payload);
+        const response = await this.$axios.post('/users/signin', payload);
+
         // 로그인 성공 시 처리
         console.log(response.data);
       } catch (error) {

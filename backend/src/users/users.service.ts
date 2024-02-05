@@ -1,7 +1,7 @@
-import { BadRequestException, HttpStatus, Injectable, ForbiddenException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, FindOneOptions } from 'typeorm';
 import { User } from './user.entity';
-import { Repository } from 'typeorm/index';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
@@ -24,7 +24,7 @@ export class UsersService {
    * @param id
    */
   findOne(id: number): Promise<User> {
-    return this.usersRepository.findOneBy({ id: id });
+    return this.usersRepository.findOneBy({ id });
   }
 
   /**
@@ -32,19 +32,7 @@ export class UsersService {
    * @param user
    */
   async create(user: CreateUserDTO): Promise<any> {
-    const isUser = await this.usersRepository.findOneBy({ email: user.email });
-
-    if (isUser) {
-      throw new ForbiddenException({
-        statusCode: HttpStatus.FORBIDDEN,
-        message: [`이미 등록된 사용자입니다.`],
-        error: 'Forbidden'
-      })
-    }
-
-    user.password = await bcrypt.hash(user.password, 10);
-    const { password, ...result } = await this.usersRepository.save(user);
-    return result;
+    return this.usersRepository.save(user);
   }
 
   /**
@@ -53,7 +41,7 @@ export class UsersService {
    * @param user
    */
   async update(id: number, user: UpdateUserDTO): Promise<void> {
-    const prevUser = await this.usersRepository.findOneBy({ id: id });
+    const prevUser = await this.usersRepository.findOneBy({ id });
     let userToUpdate = {...prevUser, ...user};
     await this.usersRepository.save(userToUpdate);
   }
@@ -63,24 +51,35 @@ export class UsersService {
    * @param id
    */
   async remove(id: number): Promise<void> {
-    await this.usersRepository.delete({ id: id });
+    await this.usersRepository.delete({ id });
   }
 
   /**
    * 동일 이메일 검사
    * @param email
    */
-  async findOneByEmail(email: string) {
-    const user = await this.usersRepository.findOne({
+  async findByEmail(email: string) {
+    return await this.usersRepository.findOne({
       where: {email},
-      withDeleted: true
     })
+  }
 
-    if (user) {
-      throw new BadRequestException('이미 생성된 유저입니다.');
-    }
+  /**
+   * 동일 핸드폰 번호 검사
+   */
+  async findByPhoneNumber(phoneNumber: string) {
+    return await this.usersRepository.findOne({
+      where: {phoneNumber},
+    })
+  }
 
-    return user;
+  /**
+   * 동일 닉네임 검사
+   */
+  async findByNickname(nickname: string) {
+    return await this.usersRepository.findOne({
+      where: {nickname},
+    })
   }
 
   /**
@@ -89,5 +88,19 @@ export class UsersService {
    */
   async hashPassword(password: string) {
     return await bcrypt.hash(password, 11);
+  }
+
+  /**
+   * 사용자 인증
+   * @param email
+   * @param password
+   */
+  async validateUser(email: string, password: string): Promise<User | null> {
+    const user = await this.usersRepository.findOne({ where: { email } } as FindOneOptions<User>);
+
+    if (user && user.password === password) {
+      return user;
+    }
+    return null;
   }
 }
